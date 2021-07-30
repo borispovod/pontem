@@ -4,6 +4,8 @@ use move_core_types::identifier::Identifier;
 use move_core_types::language_storage::StructTag;
 use move_core_types::account_address::AccountAddress;
 
+use sp_runtime::DispatchError;
+
 mod common;
 use common::assets::*;
 use common::mock::*;
@@ -63,7 +65,7 @@ fn execute_get_balance() {
         publish_module(account, UserMod::Store, None).unwrap();
 
         // execute tx:
-        let result = execute_tx(account, UserTx::StoreGetBalance, None);
+        let result = execute_tx(vec![&account], UserTx::StoreGetBalance, None);
         assert_ok!(result);
 
         // check storage:
@@ -74,27 +76,21 @@ fn execute_get_balance() {
     });
 }
 
-// TODO: replace with new tests.
 #[test]
-#[ignore]
 fn execute_get_missing_balance_err() {
     new_test_ext().execute_with(|| {
-        //let account = origin_ps_acc();
+        let account = origin_ps_acc();
 
-        // execute tx:
-        //let signer = Origin::signed(account);
-        //let result = execute_tx_unchecked(signer, UserTx::MissedNativeBalance, GAS_LIMIT);
-        //assert!(result.is_err());
+        let result = execute_tx(vec![&account], UserTx::StoreGetBalance, None);
+        assert!(result.is_err());
 
-        /*
         match result.unwrap_err().error {
             DispatchError::Module {
-                message: Some("ResourceDoesNotExist"),
+                message: Some("LinkerError"),
                 ..
             } => { /* OK */ }
             _ => panic!("should be an error"),
         }
-        */
     });
 }
 
@@ -103,24 +99,35 @@ fn execute_get_missing_balance_err() {
 #[ignore]
 fn execute_deposit_balance() {
     new_test_ext().execute_with(|| {
-        //let account = origin_ps_acc();
+        use sp_core::sr25519::Public;
+        use sp_core::crypto::Ss58Codec;
+
+        let account_alice = Public::from_ss58check(ALICE_SS58).unwrap();
+        // let account_alice =  origin_ps_acc();
+        let account_bob = origin_ps_acc();
 
         // publish user module:
-        //publish_module(account, UserMod::Store, None).unwrap();
+        publish_module(account_bob, UserMod::Store, None).unwrap();
 
         // execute tx:
-        //let _signer = Origin::signed(account);
-        //let result = execute_tx_unchecked(signer, UserTx::StoreNativeDepositReg, GAS_LIMIT);
-        //assert_ok!(result);
+        let result = execute_tx(vec![&account_bob], UserTx::StoreGetBalance, None);
+        assert_ok!(result);
 
         // check storage:
-        //check_storage_u128(to_move_addr(account), INITIAL_BALANCE / 2);
-        // check balance for PONT assets (equivalent):
-        //check_storage_pont(to_move_addr(account), INITIAL_BALANCE / 2);
+        check_storage_u64(to_move_addr(account_bob), INITIAL_BALANCE);
+        let bob_balance = balances::Pallet::<Test>::free_balance(&account_bob);
+        println!("bob balance: {:?}", bob_balance);
 
-        // let total = balances::TotalIssuance::<Test>::get();
-        //let balance = balances::Pallet::<Test>::free_balance(&account);
-        //assert_eq!(INITIAL_BALANCE / 2, balance);
+
+        // execute tx:
+        let result = execute_tx(
+            vec![&account_bob, &account_alice],
+            UserTx::StoreWithdraw,
+            None
+        );
+        assert_ok!(result);
+
+        // assert_eq!(INITIAL_BALANCE, balance);
     });
 }
 

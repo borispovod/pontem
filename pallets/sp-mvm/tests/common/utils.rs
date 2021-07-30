@@ -69,15 +69,16 @@ pub fn publish_package_unchecked<Asset: BinAsset>(
     Mvm::publish_package(Origin::signed(signer), package.bc().to_vec(), gas_limit)
 }
 
-pub fn execute_tx(origin: AccountId, tx: UserTx, gas_limit: Option<u64>) -> PsResult {
+pub fn execute_tx(origin: Vec<&AccountId>, tx: UserTx, gas_limit: Option<u64>) -> PsResult {
     let gas_limit = gas_limit.unwrap_or(DEFAULT_GAS_LIMIT);
     // get bytecode:
     let bc = tx.bc().to_vec();
     // execute VM tx:
-    let result = Mvm::execute(Origin::signed(origin), bc, gas_limit);
+    let result = Mvm::execute_multi(origin, bc, gas_limit);
     eprintln!("execute tx result: {:?}", result);
     result
 }
+
 
 pub fn check_storage_module<Bc: AsRef<[u8]>>(
     account_address: AccountAddress,

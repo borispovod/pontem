@@ -130,7 +130,7 @@ pub mod pallet {
             let who = ensure_signed(origin)?;
             debug!("executing `execute` with signed {:?}", who);
 
-            let vm_result = Self::raw_execute_script(&who, tx_bc, gas_limit, false)?;
+            let vm_result = Self::raw_execute_script(vec![&who], tx_bc, gas_limit, false)?;
 
             // produce result with spended gas:
             let result = result::from_vm_result::<T>(vm_result)?;
@@ -315,9 +315,20 @@ pub mod pallet {
             Gas::new(gas_limit, GAS_UNIT_PRICE).map_err(|_| Error::InvalidGasAmountMaxValue)
         }
 
-        // TODO: support for multiplay signers.
+        pub fn execute_multi(
+            origin: Vec<&T::AccountId>,
+            tx_bc: Vec<u8>,
+            gas_limit: u64,
+        ) -> DispatchResultWithPostInfo {
+            let vm_result = Self::raw_execute_script(origin, tx_bc, gas_limit, false)?;
+
+            // produce result with spended gas:
+            let result = result::from_vm_result::<T>(vm_result)?;
+            Ok(result)
+        }
+
         pub fn raw_execute_script(
-            account: &T::AccountId,
+            account: Vec<&T::AccountId>,
             tx_bc: Vec<u8>,
             gas_limit: u64,
             dry_run: bool,
@@ -340,10 +351,11 @@ pub mod pallet {
                     Vec::with_capacity(0)
                 } else {
                     debug!("executing `execute` with signed {:?}", account);
-                    let sender = addr::account_to_bytes(account);
-                    debug!("converted sender: {:?}", sender);
-
-                    vec![AccountAddress::new(sender)]
+                    let senders =  account.iter()
+                        .map(|account|AccountAddress::new(addr::account_to_bytes(account)))
+                        .collect();
+                    debug!("converted sender: {:?}", senders);
+                    senders
                 };
 
                 if transaction.signers_count() as usize != signers.len() {

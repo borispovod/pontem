@@ -16,6 +16,7 @@ dove tx "store_system_block()"
 dove tx "store_system_timestamp()"
 dove tx "inf_loop()"
 dove tx "store_native_balance()"
+dove tx "multisig_test()"
 #dove tx "store_native_deposit(false)"
 #dove tx "store_native_deposit(true)" -o=store_native_deposit_reg
 #dove tx "store_native_withdraw(false)"

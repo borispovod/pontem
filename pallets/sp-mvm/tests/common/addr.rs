@@ -8,11 +8,20 @@ pub use move_core_types::language_storage::CORE_CODE_ADDRESS as ROOT_ADDR;
 use sp_mvm::addr::account_to_account_address;
 
 pub const BOB_SS58: &str = "5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty";
+pub const ALICE_SS58: &str = "5FA9nQDVg267DEd8m1ZypXLBnvN7SFxYwV7ndqSYGiN9TTpu";
 
 /// Returns pk for //Bob (5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty)
 pub fn origin_ps_acc() -> Public {
     let pk = Public::from_ss58check(BOB_SS58).unwrap();
     pk
+}
+
+pub fn bob_public_key() -> Public {
+    Public::from_ss58check(BOB_SS58).unwrap()
+}
+
+pub fn alice_public_key() -> Public {
+    Public::from_ss58check(ALICE_SS58).unwrap()
 }
 
 /// Returns `AccountAddress` for Bob

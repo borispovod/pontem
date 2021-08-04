@@ -14,5 +14,7 @@
 /pallets/**/target/
 artifacts/
 /node/move/stdlib/
+**/assets/stdlib/
+**/benchmark_assets/stdlib
 
 .direnv

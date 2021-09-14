@@ -56,6 +56,7 @@ xcm = { default-features = false, git = 'https://github.com/paritytech/polkadot.
 xcm-builder = { default-features = false, git = 'https://github.com/paritytech/polkadot.git', branch = 'release-v0.9.8' }
 xcm-executor = { default-features = false, git = 'https://github.com/paritytech/polkadot.git', branch = 'release-v0.9.8' }
 polkadot-parachain = { default-features = false, git = 'https://github.com/paritytech/polkadot.git', branch = 'release-v0.9.8' }
+kusama-runtime = { default-features = false, git = 'https://github.com/paritytech/polkadot.git', branch = 'release-v0.9.8' }
 
 # Cumulus Dependencies
 parachain-info = { default-features = false, git = 'https://github.com/purestake/cumulus', branch = 'joshy-np098' }
@@ -133,4 +134,5 @@ std = [
     'pallet-author-slot-filter/std',
     'pallet-author-inherent/std',
     'parachain-staking/std',
+    'kusama-runtime/std',
 ]

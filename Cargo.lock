@@ -7428,6 +7428,7 @@ dependencies = [
  "frame-system-benchmarking",
  "frame-system-rpc-runtime-api",
  "hex-literal",
+ "kusama-runtime",
  "nimbus-primitives",
  "pallet-author-inherent",
  "pallet-author-mapping",
